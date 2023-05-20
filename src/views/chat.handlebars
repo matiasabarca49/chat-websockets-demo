@@ -1,7 +1,12 @@
-<div>
-    <h1>Bienvenido al chat</h1>
-    <p>Coloque su nombre y texto antes de enviar</p> 
-    <form action="" id="form">
+<div class="containerPageChat">
+    <div>
+        <h1>Bienvenido al chat</h1>
+        <p>Coloque su nombre y texto antes de enviar</p> 
+    </div>
+    <div id="contChats" class="contChatsStyle">
+
+    </div>
+    <form  id="form">
        <div>
             <label for="">Nombre</label>
             <input type="text" name="" id="name" placeholder="Tu nombre">
@@ -12,9 +17,7 @@
         </div>
         <input type="submit" value="Enviar">
     </form>
-    <div id="contChats">
-
-    </div>
+    
 </div>
 <!--Script de socket.io para que nuestro index pueda utilizar los metodos del propio socket.io -->
 <script src="./socket.io/socket.io.js"></script>

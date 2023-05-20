@@ -3,7 +3,17 @@ const render = (chats) =>{
     contChats.innerHTML= ""
     chats.forEach(chat => {
         const newChat = document.createElement('div')
-        newChat.innerHTML = ` <p><strong> ${chat.autor} </strong>  <span>  ${ chat.text } </span> <p>`
+        if (chat.id === idNow){
+            newChat.className= "constMessage MyMessage"
+            newChat.innerHTML = `
+                                    <strong> ${chat.autor} </strong>  <span>  ${ chat.text } </span> 
+                                 `
+        } else{
+            newChat.className= "constMessage othersMessage"
+            newChat.innerHTML = `
+                                    <strong> ${chat.autor} </strong>  <span>  ${ chat.text } </span> 
+                                `
+        }
         contChats.appendChild(newChat)
     });
 }
@@ -11,15 +21,17 @@ const render = (chats) =>{
 //Meotodo traido desde socket.io.js que enciende el socket del cliente
 let socket = io()
 
+const idNow = Date.now()
+
 socket.on("chats", (data) => {
     console.log(data)
     render(data)
     const newMessage = () =>{
         const message = {
+            id: idNow,
             autor: document.getElementById("name").value,
             text: document.getElementById("text").value
         }
-        console.log(message)
         document.getElementById("text").value = ""
         socket.emit('msg', message)
     }

@@ -1,0 +1,39 @@
+/**
+*Chat
+  **/
+
+  .containerPageChat{
+    display: flex;
+    flex-direction: column;
+    width: 1000px;
+    height: 90vh;
+    margin: 0 auto;
+    background-color: rgb(231, 229, 229);
+    position: relative;
+  }
+
+  .contChatsStyle{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex-grow: 2;
+    position: relative;
+    overflow-y: scroll;
+  }
+  .constMessage{
+    display: inline-block;
+    bottom: 0;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+  }
+
+  .MyMessage{
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+    align-self: flex-end;
+  }
+
+  .othersMessage{
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    align-self: flex-start;
+  }
