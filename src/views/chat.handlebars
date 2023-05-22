@@ -1,24 +1,21 @@
 <div class="containerPageChat">
-    <div>
+    <div class="welcome">
         <h1>Bienvenido al chat</h1>
         <p>Coloque su nombre y texto antes de enviar</p> 
     </div>
     <div id="contChats" class="contChatsStyle">
 
     </div>
-    <form  id="form">
-       <div>
-            <label for="">Nombre</label>
-            <input type="text" name="" id="name" placeholder="Tu nombre">
-       </div> 
-        <div>
-            <label for="">Mensaje</label>
-            <input type="text" name="" id="text" placeholder="Escribe un mensaje">
+    <form  id="form" >
+        <div class="sendMessage">
+            <input type="text" name="" id="text" placeholder="Escribe un mensaje" required>
+            <input type="submit" value="Enviar">    
         </div>
-        <input type="submit" value="Enviar">
     </form>
     
 </div>
 <!--Script de socket.io para que nuestro index pueda utilizar los metodos del propio socket.io -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="sweetalert2.all.min.js"></script>
 <script src="./socket.io/socket.io.js"></script>
 <script src="./index.js"></script>

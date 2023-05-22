@@ -1,15 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
 /**
 *Chat
   **/
 
+
   .containerPageChat{
     display: flex;
     flex-direction: column;
-    width: 1000px;
+    width: 80vw;
     height: 90vh;
     margin: 0 auto;
     background-color: rgb(231, 229, 229);
     position: relative;
+  }
+
+  .containerPageChat .sendMessage {
+    display: flex;
+    gap: 0.2rem;
+
+  }
+  .containerPageChat .sendMessage input[type="text"]{
+    flex-grow: 2;
+
+  }
+
+  .welcome{
+    text-align: center;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid black;
   }
 
   .contChatsStyle{
@@ -17,23 +43,49 @@
     flex-direction: column;
     justify-content: flex-end;
     flex-grow: 2;
+    padding: 1rem;
     position: relative;
     overflow-y: scroll;
   }
-  .constMessage{
-    display: inline-block;
+  .contChatsStyle .constMessage{
+    display: flex;
+    flex-direction: column;
     bottom: 0;
-    padding: 1rem;
+    padding: 0.4rem;
     margin-bottom: 0.5rem;
     border-radius: 10px;
   }
 
-  .MyMessage{
+  .contChatsStyle .constMessage p{
+    margin: 0;
+    
+  }
+  .contChatsStyle .constMessage .autor{
+    align-self: flex-start;
+    font-size: 0.8rem;
+    font-weight: 300;
+    opacity: 0.7;
+    
+  }
+  .contChatsStyle .constMessage .dateMSG{
+    align-self: flex-end;
+    font-size: 0.7rem;
+    font-weight: 300;
+    margin-left: 15px;
+    opacity: 0.7;
+  }
+  
+
+  .contChatsStyle .MyMessage{
     background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
     align-self: flex-end;
   }
 
-  .othersMessage{
+  .contChatsStyle .othersMessage{
     background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
     align-self: flex-start;
+  }
+
+  form{
+    border-top: 2px solid black;
   }
