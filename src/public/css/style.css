@@ -7,6 +7,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
+body{
+  background-color: #181a1b;
+}
+
 /**
 *Chat
   **/
@@ -17,25 +21,40 @@
     flex-direction: column;
     width: 80vw;
     height: 90vh;
-    margin: 0 auto;
-    background-color: rgb(231, 229, 229);
+    margin: 1rem auto;
+   /*  background-color: #26292b; */
     position: relative;
+    border-radius: 20px;
   }
 
   .containerPageChat .sendMessage {
     display: flex;
-    gap: 0.2rem;
+    background-color: #26292b;
+    margin-top: 0.5rem;
+    /* gap: 0.2rem; */
 
   }
   .containerPageChat .sendMessage input[type="text"]{
     flex-grow: 2;
-
+    padding: 0.5rem;
+  }
+  .containerPageChat .sendMessage button{
+    background-color: #181a1b;
+    border: none;
+    padding: 0 0.5rem;
+    cursor: pointer;
+  }
+  .containerPageChat .sendMessage button img{
+    width: 30px;
   }
 
   .welcome{
     text-align: center;
-    margin-bottom: 0.5rem;
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid #fff;
+    color: #fff;
+    background-color: #26292b;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
   }
 
   .contChatsStyle{
@@ -45,7 +64,10 @@
     flex-grow: 2;
     padding: 1rem;
     position: relative;
-    overflow-y: scroll;
+    overflow-y: auto;
+    background-color: #26292b;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
   }
   .contChatsStyle .constMessage{
     display: flex;
@@ -87,5 +109,13 @@
   }
 
   form{
-    border-top: 2px solid black;
+   /*  border-top: 2px solid black; */
+    background-color: #181a1b;
+  }
+
+  @media screen and (max-width: 762px) {
+    .containerPageChat{
+      width: 100%;
+    }
+    
   }

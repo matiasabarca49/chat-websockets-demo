@@ -18,9 +18,11 @@ const io = new Server(server)
 io.on("connection", (socket) =>{
     socket.on('msg', (data) => {
         messages.push(data)
+        console.log(messages)
         io.sockets.emit("chats", messages)
     })
     socket.emit("chats", messages)
+    console.log(messages)
 })
 
 //Handleblars

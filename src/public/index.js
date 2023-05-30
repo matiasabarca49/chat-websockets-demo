@@ -23,26 +23,33 @@ const render = (chats) =>{
 
 //Metodo traido desde socket.io.js que enciende el socket del cliente
 let socket = io()
-
-const idChat =  localStorage.getItem("idChat") || localStorage.setItem("idChat",Date.now().toString())
-
+//Variables que nos permite difenciar el chat propio de los demas clientes
+let idChat;
 let autorCurrent;
 
 if(localStorage.getItem("autor")){
 
-   autorCurrent = localStorage.getItem("autor")
+    autorCurrent = localStorage.getItem("autor")
+    idChat =  localStorage.getItem("idChat") 
 
 } else{
     Swal.fire({
         title: "Tu nombre",
         input: "text",
-        showCancelButton: true,
         confirmButtonText: "Guardar",
+        allowOutsideClick: false,
+        inputValidator: (value) => {
+            if (!value) {
+              return 'Necesitas escribir un nombre o nickname'
+            }
+          }
     })
     .then(res => {
         if (res.value) {
-            autorCurrent = res.value
+            autorCurrent = res.value;
+            idChat = `${Date.now()} - ${autorCurrent}`
             localStorage.setItem("autor", res.value )
+            localStorage.setItem("idChat", idChat) 
         }
     });
 }
