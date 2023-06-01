@@ -11,32 +11,53 @@ body{
   background-color: #181a1b;
 }
 
+.mainCont{
+  display: flex;
+  gap: 1rem;
+  padding: 0 1rem;
+  color: #fff
+}
+
+.mainCont .contUsers{
+  flex-grow: 1;
+  margin: 1rem 0;
+  background-color: #1d1f20;
+  border-radius: 20px;
+  width: 20%;
+  padding: 0.5rem;
+}
+
+.mainCont .contUsers .contUsers__myUser .currentUserStyle{
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.mainCont .contUsers  .contUsers__othersUser{
+  margin: 2rem 0;
+}
+
 /**
 *Chat
   **/
-
-
-  .containerPageChat{
-    display: flex;
-    flex-direction: column;
+  .mainCont .containerPageChat{
     width: 80vw;
-    height: 90vh;
-    margin: 1rem auto;
-   /*  background-color: #26292b; */
+    height: 95vh;
+    margin: 1rem 0;
     position: relative;
     border-radius: 20px;
+    flex-grow: 1;
   }
 
-  .containerPageChat .sendMessage {
+  .mainCont .containerPageChat .sendMessage {
     display: flex;
-    background-color: #26292b;
     margin-top: 0.5rem;
-    /* gap: 0.2rem; */
 
   }
   .containerPageChat .sendMessage input[type="text"]{
     flex-grow: 2;
     padding: 0.5rem;
+    border: none;
+    border-radius: 20px;
   }
   .containerPageChat .sendMessage button{
     background-color: #181a1b;
@@ -52,30 +73,35 @@ body{
     text-align: center;
     border-bottom: 2px solid #fff;
     color: #fff;
-    background-color: #26292b;
+    background-color: #1d1f20;
     border-top-right-radius: 20px;
     border-top-left-radius: 20px;
+    height: 15%;
   }
 
   .contChatsStyle{
+    height: 70%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    /* justify-content: flex-end; */ /* No permitia que el overflow con scroll funcionara */
     flex-grow: 2;
-    padding: 1rem;
+    padding: 2rem;
     position: relative;
-    overflow-y: auto;
+    overflow-y: scroll;
+    overflow-x: hidden;
     background-color: #26292b;
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 20px;
   }
   .contChatsStyle .constMessage{
-    display: flex;
-    flex-direction: column;
-    bottom: 0;
+    display: inline-block;
+    position: relative;
     padding: 0.4rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     border-radius: 10px;
+    /* box-shadow: 0px 0px 7px black; */
+    box-shadow: 5px 5px 10px black;
+    max-width: 40%;
   }
 
   .contChatsStyle .constMessage p{
@@ -100,12 +126,19 @@ body{
 
   .contChatsStyle .MyMessage{
     background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+    color: #000;
     align-self: flex-end;
+    border-top-right-radius: 0;
+    /* left: 90%; */
   }
 
   .contChatsStyle .othersMessage{
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    /* background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%); */
+    background-color: #292c2e;
+    background-image: linear-gradient(160deg, #292c2e 0%, #2a2d2f 100%);
+    color: #fff;
     align-self: flex-start;
+    border-top-left-radius: 0;
   }
 
   form{
@@ -113,9 +146,43 @@ body{
     background-color: #181a1b;
   }
 
+  .msgOut{
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    right: -15px;
+    top: 0;
+    border-bottom: 10px solid transparent;
+    border-top: 0px solid transparent;
+    border-left: 15px solid #c2e9fb;
+    font-size: 0px;
+    line-height: 0px;
+  }
+
+  .msgIn{
+    position: absolute;
+    top: 0;
+    left: -15px;
+    width:0px;
+    height:0px;
+    border-bottom:10px solid transparent;  /* izquierda flecha */
+    border-top:0px solid transparent; /* derecha flecha */
+    border-right:15px solid #2a2d2f; /* base flecha y color*/
+    font-size:0px;
+    line-height:0px;;
+  }
+
   @media screen and (max-width: 762px) {
-    .containerPageChat{
-      width: 100%;
+    .mainCont{
+      flex-direction: column;
+    }
+
+    .mainCont .containerPageChat{
+      width: 95vW;
+    }
+
+    .mainCont .containerPageChat .contChatsStyle .constMessage{
+      max-width: 80%;
     }
     
   }

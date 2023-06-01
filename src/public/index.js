@@ -6,12 +6,14 @@ const render = (chats) =>{
         if (chat.id === idChat){
             newChat.className= "constMessage MyMessage"
             newChat.innerHTML = `
+                                    <div class="msgOut"></div>
                                     <p>${ chat.text } </p> 
                                     <div class="dateMSG">${chat.dateMessage}</div>
                                  `
         } else{
             newChat.className= "constMessage othersMessage"
             newChat.innerHTML = `
+                                    <div class="msgIn"></div>
                                     <div class="autor"> ${chat.autor} </div>
                                     <p>  ${ chat.text } </p>
                                     <div class="dateMSG">${chat.dateMessage}</div> 
@@ -19,6 +21,11 @@ const render = (chats) =>{
         }
         contChats.appendChild(newChat)
     });
+    //Colocar el scroll siempre al final
+    const span = document.createElement("span")
+    span.innerHTML= `<span id="viewLastMsg"></span>`
+    contChats.appendChild(span)
+    document.getElementById('viewLastMsg').scrollIntoView(true)
 }
 
 //Metodo traido desde socket.io.js que enciende el socket del cliente
@@ -31,6 +38,8 @@ if(localStorage.getItem("autor")){
 
     autorCurrent = localStorage.getItem("autor")
     idChat =  localStorage.getItem("idChat") 
+    const currentUser = document.getElementById("currentUser")
+    currentUser.innerText= `${autorCurrent}`
 
 } else{
     Swal.fire({
@@ -50,6 +59,8 @@ if(localStorage.getItem("autor")){
             idChat = `${Date.now()} - ${autorCurrent}`
             localStorage.setItem("autor", res.value )
             localStorage.setItem("idChat", idChat) 
+            const currentUser = document.getElementById("currentUser")
+            currentUser.innerText= `${autorCurrent}`
         }
     });
 }
