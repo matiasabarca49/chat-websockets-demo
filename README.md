@@ -42,6 +42,12 @@ Para instalar las librerias necesarias, ingresamos al directorio una vez realiza
 ```
 npm install
 ```
+Es necesario tener instalado nodemon para poder ejecutar la aplicación. Esta herramienta nos permite reiniciar la aplicacion cada vez que se guardan los cambios. Para instalar:
+
+```
+npm install nodemon
+```
+
 Una vez instalados todas las libreriasa necesarias, ejecutamos la aplicacion con el siguiente comando:
 
 ```
