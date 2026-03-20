@@ -40,13 +40,15 @@ const setupSocket = (server) => {
     io.on('connection', (socket) => {
         console.log("Nuevo cliente conectado: ", socket.id);
 
-        registerMessageHandlers(io, socket, messageService);
-
-        //Manejo de Usuarios Conectados
-        registerUserHandlers(io, socket, userService);
-
         //Manejo de Conversacion
         registerConversationHandlers(io, socket, conversationService)
+        
+        //Manejo de Usuarios Conectados
+        registerUserHandlers(io, socket, userService);
+        
+        //Manejo de mensajes
+        registerMessageHandlers(io, socket, messageService);
+
   });
 
   return io;

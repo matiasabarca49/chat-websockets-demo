@@ -15,7 +15,11 @@ class UserRepository {
     }
 
     async findById(userId) {
-        return await User.findById(userId);
+        return await User.findById(userId).lean();
+    }
+
+    async findByFilter(filter){
+        return await User.find(filter).lean();
     }
 }
 

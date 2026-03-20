@@ -8,7 +8,7 @@ class MessageService {
   async sendMessage(senderId, conversationId, content) {
     //Validar que la conversación existe y el usuario es parte de ella
     const conversation = await this.conversationRepo.findById(conversationId);
-    console.log("Conversation ID: ", conversation);
+    /* console.log("Conversation ID: ", conversation); */
     if (!conversation) throw new Error("Conversación no encontrada");
     
     /* const isParticipant = conversation.participants.includes(senderId);

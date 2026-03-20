@@ -2,13 +2,27 @@ const renderUserConnected = (arrayFromConnected) =>{
     const contConnected = document.getElementById('connectedID')
     contConnected.innerHTML= ""
     arrayFromConnected.forEach( user => {
-        if (user.name !== autorCurrent){
+        if (user.name !== autorCurrent.name){
         const div = document.createElement('div')
-        div.innerHTML = `<p>.<span>${user.userId}</span></p>` 
+        div.innerHTML = `<p id=user-${user._id}>.<span>${user.name} ${user.lastName}</span></p>` 
         contConnected.appendChild(div)
         }
     } )
     
+}
+
+const renderNewUserConnected = (user) =>{
+    const contConnected = document.getElementById('connectedID')
+    const userCont = document.getElementById(`user-${user._id}`)
+    if(userCont){
+        return
+    }
+    console.log("Renderizando el nuevo usuario");
+    if (user.name !== autorCurrent){
+        const div = document.createElement('div')
+        div.innerHTML = `<p>.<span>${user.name} ${user.lastName}</span></p>` 
+        contConnected.appendChild(div)
+    }
 }
 
 const renderChats = (chats) =>{
@@ -17,18 +31,17 @@ const renderChats = (chats) =>{
     chats.forEach(chat => {
         const newChat = document.createElement('div')
         //Si el id del chat del array obtenido por parametro es igual al nuestro. Se le colocan otros estilos al chat para diferencias que es nuestro.
-        console.log(chat)
         if (chat.senderId._id === idChat){
             newChat.className= "constMessage MyMessage"
             newChat.innerHTML = `
-                                    <div class="msgOut"></div>
+                                    <div class="msgOut" id=chatGlobal-${chat._id}></div>
                                     <p>${ chat.content } </p> 
                                     <div class="dateMSG">${chat.createdAt}</div>
                                  `
         } else{
             newChat.className= "constMessage othersMessage"
             newChat.innerHTML = `
-                                    <div class="msgIn"></div>
+                                    <div class="msgIn"id=chatGlobal-${chat._id}></div>
                                     <div class="autor"> ${chat.senderId.username} </div>
                                     <p>  ${ chat.content } </p>
                                     <div class="dateMSG">${chat.createdAt}</div> 
@@ -45,21 +58,26 @@ const renderChats = (chats) =>{
 }
 
 const renderNewChat = (chat) =>{
+
+    //ver si el chat ya se renderizó
+    const chatRendered = document.getElementById(`chatGlobal-${chat._id}`)
+    if(chatRendered){
+        return;
+    }
     const contChats = document.getElementById('contChats')
-    
     const newChat = document.createElement('div')
     //Si el id del chat del array obtenido por parametro es igual al nuestro. Se le colocan otros estilos al chat para diferencias que es nuestro.
-    if (chat.id === idChat){
+    if (chat.senderId._id === idChat){
         newChat.className= "constMessage MyMessage"
         newChat.innerHTML = `
-                                <div class="msgOut"></div>
-                                <p>${ chat.text } </p> 
-                                <div class="dateMSG">${chat.dateMessage}</div>
+                                <div class="msgOut" id=chatGlobal-${chat._id}></div>
+                                <p>${ chat.content } </p> 
+                                <div class="dateMSG">${chat.createdAt}</div>
                                 `
     } else{
         newChat.className= "constMessage othersMessage"
         newChat.innerHTML = `
-                                <div class="msgIn"></div>
+                                <div class="msgIn"id=chatGlobal-${chat._id}></div>
                                 <div class="autor"> ${chat.senderId.username} </div>
                                 <p>  ${ chat.content } </p>
                                 <div class="dateMSG">${chat.createdAt}</div> 
@@ -105,11 +123,11 @@ let autorCurrent;
 if(localStorage.getItem("autor")){
 
     autorCurrent = JSON.parse(localStorage.getItem("autor"));
-    console.log("Usuario actual: ", autorCurrent);
     //Se emite  al servidor ese usuario almacenado en el localstorage
-    socket.emit('userToConnect', autorCurrent)
-    socket.on('connected', (data) => {
-        console.log(data.message);
+    socket.emit('connect_to_global', autorCurrent)
+    socket.on('new_connected_global', (data) => {
+        console.log(data);
+        renderNewUserConnected(data.data);
     })
     //El id chat que se usa para identificar los chats del autor actual se obtiene del localstorage
     idChat =  localStorage.getItem("idChat") 
@@ -146,8 +164,6 @@ if(localStorage.getItem("autor")){
         //Tratando la respuesta recibida por el usuario
         if (res.value) {
 
-            console.log(res.value);
-
             let user;
 
             fetch("http://localhost:8080/api/v1/users",
@@ -162,11 +178,11 @@ if(localStorage.getItem("autor")){
                 .then( res => res.json())
                 .then( data => {
                     user = data.data;
-                    console.log("Usuario creado: ", data);
                     autorCurrent = user;
-                    socket.emit('userToConnect', user)
-                    socket.on('connected', (data) => {
-                        console.log(data.message);
+                    socket.emit('connect_to_global', user)
+                    socket.on('new_connected_global', (data) => {
+                        console.log(data);
+                        renderNewUserConnected(data.data);
                     })
                     idChat = user._id;
                     //Se guarda el usuario nuevo en el localstorage
@@ -190,7 +206,6 @@ socket.on('cnted', (data) =>{
 fetch("http://localhost:8080/api/v1/messages/global")
     .then( res => res.json())
     .then( data => {
-        console.log("Chats: ", data);
         renderChats(data);
     } )
 

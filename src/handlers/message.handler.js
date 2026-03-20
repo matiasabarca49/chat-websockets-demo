@@ -1,3 +1,5 @@
+const globalChat = process.env.GLOBAL_CHAT_ID || "69bae27ba1177b5541b2bdcf"
+
 // sockets/chatHandler.js
 const registerMessageHandlers = (io, socket, messageService) => {
   
@@ -5,14 +7,13 @@ const registerMessageHandlers = (io, socket, messageService) => {
     try {
       const {senderId, content } = data;
 
-      conversationId = process.env.GLOBAL_CHAT_ID || "69bae27ba1177b5541b2bdcf";
       /* const userId = socket.userId; */ // Extraído previamente del handshake/token
 
       // El Service hace el trabajo sucio
-      const newMessage = await messageService.sendMessage(senderId, conversationId, content);
+      const newMessage = await messageService.sendMessage(senderId, globalChat, content);
 
       // Emitimos a la room de la conversación
-     io.to(conversationId).emit("new_global_message", newMessage);
+     io.to(globalChat).emit("new_global_message", newMessage);
       
     } catch (error) {
       socket.emit("error_message", { msg: error.message });

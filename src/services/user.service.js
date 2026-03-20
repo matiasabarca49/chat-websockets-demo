@@ -7,16 +7,36 @@ class UserService {
 
     async connectUser(userId, socketId) {
         this.connectedUsers.set(userId, socketId);
-        return {message: "Usuario conectado exitosamente", user: {id: userId, socketId}};
+        const user = await this.repository.findById(userId);
+        return {...user, socketId};
     }
 
-    getConnectedUsers() {
-        // Aquí iría la lógica para obtener los usuarios conectados
-        return Array.from(this.connectedUsers.entries()).map(([userId, socketId]) => ({userId, socketId}));
+   async getConnectedUsers() {
+        const ids = Array.from(this.connectedUsers.keys());
+
+        const users = await this.repository.findByFilter({_id: {$in: ids}});
+
+        const allUser = users.map( user => {
+            return {...user, socketId: this.connectedUsers.get(user._id.toString())}
+        })
+
+        return allUser;
+    } 
+
+    getUserIdBySocketId(socketIdUser){
+        console.log(socketIdUser);
+        for( let [userId, socketId] of this.connectedUsers.entries()){
+            console.log("UserID ", userId);
+            console.log("socketId ", socketId);
+            if(socketId === socketIdUser){
+                return userId
+            }
+        }
+
+        return false;
     }
 
-    async disconnectUser(userId) {
-        // Aquí iría la lógica para marcar al usuario como desconectado
+    disconnectUser(userId) {
         console.log(`Usuario ${userId} desconectado`);
         this.connectedUsers.delete(userId);
     }
