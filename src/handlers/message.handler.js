@@ -7,8 +7,6 @@ const registerMessageHandlers = (io, socket, messageService) => {
     try {
       const {senderId, content } = data;
 
-      /* const userId = socket.userId; */ // Extraído previamente del handshake/token
-
       // El Service hace el trabajo sucio
       const newMessage = await messageService.sendMessage(senderId, globalChat, content);
 

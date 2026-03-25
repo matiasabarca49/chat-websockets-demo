@@ -26,8 +26,8 @@ class UserService {
     getUserIdBySocketId(socketIdUser){
         console.log(socketIdUser);
         for( let [userId, socketId] of this.connectedUsers.entries()){
-            console.log("UserID ", userId);
-            console.log("socketId ", socketId);
+            /* console.log("UserID ", userId);
+            console.log("socketId ", socketId); */
             if(socketId === socketIdUser){
                 return userId
             }

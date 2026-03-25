@@ -1,103 +1,71 @@
-const renderUserConnected = (arrayFromConnected) =>{
-    const contConnected = document.getElementById('connectedID')
-    contConnected.innerHTML= ""
-    arrayFromConnected.forEach( user => {
-        if (user.name !== autorCurrent.name){
-        const div = document.createElement('div')
-        div.innerHTML = `<p id=user-${user._id}>.<span>${user.name} ${user.lastName}</span></p>` 
-        contConnected.appendChild(div)
-        }
-    } )
-    
-}
-
-const renderNewUserConnected = (user) =>{
-    const contConnected = document.getElementById('connectedID')
-    const userCont = document.getElementById(`user-${user._id}`)
-    if(userCont){
-        return
+const renderUserConnected = (arrayFromConnected) => {
+  const contConnected = document.getElementById('connectedID');
+  contConnected.innerHTML = '';
+  arrayFromConnected.forEach(user => {
+    if (user.name !== autorCurrent.name) {
+      const div = document.createElement('div');
+      div.innerHTML = `<div class="connectedBar__item" id="user-${user._id}">${user.name} ${user.lastName}</div>`;
+      contConnected.appendChild(div);
     }
-    console.log("Renderizando el nuevo usuario");
-    if (user.name !== autorCurrent){
-        const div = document.createElement('div')
-        div.innerHTML = `<p>.<span>${user.name} ${user.lastName}</span></p>` 
-        contConnected.appendChild(div)
-    }
-}
+  });
+};
 
-const renderChats = (chats) =>{
-    const contChats = document.getElementById('contChats')
-    contChats.innerHTML= ""
-    chats.forEach(chat => {
-        const newChat = document.createElement('div')
-        //Si el id del chat del array obtenido por parametro es igual al nuestro. Se le colocan otros estilos al chat para diferencias que es nuestro.
-        if (chat.senderId._id === idChat){
-            newChat.className= "constMessage MyMessage"
-            newChat.innerHTML = `
-                                    <div class="msgOut" id=chatGlobal-${chat._id}></div>
-                                    <p>${ chat.content } </p> 
-                                    <div class="dateMSG">${chat.createdAt}</div>
-                                 `
-        } else{
-            newChat.className= "constMessage othersMessage"
-            newChat.innerHTML = `
-                                    <div class="msgIn"id=chatGlobal-${chat._id}></div>
-                                    <div class="autor"> ${chat.senderId.username} </div>
-                                    <p>  ${ chat.content } </p>
-                                    <div class="dateMSG">${chat.createdAt}</div> 
-                                `
-        }
-        contChats.appendChild(newChat)
-    });
-    //Colocar el scroll siempre al final
-    const span = document.createElement("span")
-    //El elemento span siempre tiene por debajo de todos los chats
-    span.innerHTML= `<span id="viewLastMsg"></span>`
-    contChats.appendChild(span)
-    document.getElementById('viewLastMsg').scrollIntoView(true)
-}
+const renderNewUserConnected = (user) => {
+  const contConnected = document.getElementById('connectedID');
+  if (document.getElementById(`user-${user._id}`)) return;
+  if (user.name !== autorCurrent) {
+    const div = document.createElement('div');
+    div.innerHTML = `<p id="user-${user._id}"><span>${user.name} ${user.lastName}</span></p>`;
+    contConnected.appendChild(div);
+  }
+};
 
-const renderNewChat = (chat) =>{
+const buildMessage = (chat) => {
+  const isOwn = chat.senderId?._id === idChat;
+  const div = document.createElement('div');
+  div.className = `constMessage ${isOwn ? 'MyMessage' : 'othersMessage'}`;
 
-    //ver si el chat ya se renderizó
-    const chatRendered = document.getElementById(`chatGlobal-${chat._id}`)
-    if(chatRendered){
-        return;
-    }
-    const contChats = document.getElementById('contChats')
-    const newChat = document.createElement('div')
-    //Si el id del chat del array obtenido por parametro es igual al nuestro. Se le colocan otros estilos al chat para diferencias que es nuestro.
-    if (chat.senderId._id === idChat){
-        newChat.className= "constMessage MyMessage"
-        newChat.innerHTML = `
-                                <div class="msgOut" id=chatGlobal-${chat._id}></div>
-                                <p>${ chat.content } </p> 
-                                <div class="dateMSG">${chat.createdAt}</div>
-                                `
-    } else{
-        newChat.className= "constMessage othersMessage"
-        newChat.innerHTML = `
-                                <div class="msgIn"id=chatGlobal-${chat._id}></div>
-                                <div class="autor"> ${chat.senderId.username} </div>
-                                <p>  ${ chat.content } </p>
-                                <div class="dateMSG">${chat.createdAt}</div> 
-                            `
-    }
-    contChats.appendChild(newChat)
-    
-    //Colocar el scroll siempre al final
-    const span = document.createElement("span")
-    //El elemento span siempre tiene por debajo de todos los chats
-    span.innerHTML= `<span id="viewLastMsg"></span>`
-    contChats.appendChild(span)
-    document.getElementById('viewLastMsg').scrollIntoView(true)
-}
+  const date = new Date(chat.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  div.innerHTML = isOwn
+    ? `<div class="msgOut" id="chatGlobal-${chat._id}"></div>
+       <p>${chat.content}</p>
+       <div class="dateMSG">${date}</div>`
+    : `<div class="msgIn" id="chatGlobal-${chat._id}"></div>
+       <div class="autor">${chat.senderId?.username}</div>
+       <p>${chat.content}</p>
+       <div class="dateMSG">${date}</div>`;
+
+  return div;
+};
+
+const scrollToBottom = () => {
+  document.getElementById('viewLastMsg').scrollIntoView({ behavior: 'smooth' });
+};
+
+const renderChats = (chats) => {
+  const contChats = document.getElementById('contChats');
+  contChats.innerHTML = '';
+  chats.forEach(chat => contChats.appendChild(buildMessage(chat)));
+  contChats.appendChild(Object.assign(document.createElement('span'), { id: 'viewLastMsg' }));
+  scrollToBottom();
+};
+
+const renderNewChat = (chat) => {
+  if (document.getElementById(`chatGlobal-${chat._id}`)) return;
+  const contChats = document.getElementById('contChats');
+  contChats.appendChild(buildMessage(chat));
+  const span = document.getElementById('viewLastMsg');
+  if (span) span.remove();
+  contChats.appendChild(Object.assign(document.createElement('span'), { id: 'viewLastMsg' }));
+  scrollToBottom();
+};
 
 //Funcion que genera un nuevo mensaje y se lo envia al servidor
 const newGlobalMessage = () =>{
     //Creamos el mensaje nuevo
     const message = {
-        senderId: autorCurrent._id,
+        senderId: autorCurrent.id,
         content: document.getElementById("text").value,
     }
     document.getElementById("text").value = ""
@@ -135,64 +103,8 @@ if(localStorage.getItem("autor")){
     currentUser.innerText= `${autorCurrent.name} ${autorCurrent.lastName}(${autorCurrent.username})`;
 
 } else{
-        Swal.fire({
-        title: 'Identifícate',
-        html: `
-            <input type="text" id="name" class="swal2-input" placeholder="Nombre">
-            <input type="text" id="lastName" class="swal2-input" placeholder="Apellido">
-            <input type="text" id="username" class="swal2-input" placeholder="Nombre de Usuario">
-            <input type="email" id="email" class="swal2-input" placeholder="Email">
-            <input type="password" id="password" class="swal2-input" placeholder="Contraseña">
-        `,
-        focusConfirm: false,
-        preConfirm: () => {
-            const name = document.getElementById('name').value;
-            const lastName = document.getElementById('lastName').value;
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    window.location.href = "/login";
 
-            if (!name || !lastName || !username || !email || !password) {
-            Swal.showValidationMessage('Todos los campos son obligatorios');
-            return false;
-            }
-
-            return { name, lastName, username, email, password };
-        }
-        })
-    .then(res => {
-        //Tratando la respuesta recibida por el usuario
-        if (res.value) {
-
-            let user;
-
-            fetch("http://localhost:8080/api/v1/users",
-                {
-                    method: 'POST', // tipo de petición
-                    headers: {
-                        'Content-Type': 'application/json' // indicamos que enviamos JSON
-                    },
-                    body: JSON.stringify(res.value)
-                }
-            )
-                .then( res => res.json())
-                .then( data => {
-                    user = data.data;
-                    autorCurrent = user;
-                    socket.emit('connect_to_global', user)
-                    socket.on('new_connected_global', (data) => {
-                        console.log(data);
-                        renderNewUserConnected(data.data);
-                    })
-                    idChat = user._id;
-                    //Se guarda el usuario nuevo en el localstorage
-                    localStorage.setItem("autor", JSON.stringify(autorCurrent));
-                    localStorage.setItem("idChat", idChat);
-                    const currentUser = document.getElementById("currentUser")
-                    currentUser.innerText= `${autorCurrent.name} ${autorCurrent.lastName}(${autorCurrent.username})`;
-                })
-        }
-    });
 }
 
 //Recibe los usuario conectados desde el servidor
@@ -215,6 +127,79 @@ form.onsubmit = (e) =>{
     e.preventDefault()
     newGlobalMessage()
 } 
+
+//Evento para desconectar el usuario
+const disconect = document.getElementById("btn-disconnect");
+disconect.addEventListener("click", () =>{
+    fetch("http://localhost:8080/api/v1/auth/logout")
+    localStorage.removeItem("autor");
+    localStorage.removeItem("idChat");
+    window.location.href = "/login"
+})
+
+// ── Sidebar: toggle nuevo chat privado ──────────────────────────────
+const btnNewPrivate   = document.getElementById('btn-new-private');
+const newChatForm     = document.getElementById('newChatForm');
+const newChatInput    = document.getElementById('newChatInput');
+const btnConfirm      = document.getElementById('btn-confirm-private');
+const privateRoomsList = document.getElementById('privateRoomsList');
+const chatTitle       = document.getElementById('chatTitle');
+
+let currentRoom = 'global';
+
+btnNewPrivate.addEventListener('click', () => {
+  newChatForm.hidden = !newChatForm.hidden;
+  if (!newChatForm.hidden) newChatInput.focus();
+});
+
+// Confirmar nuevo chat privado con Enter o botón
+newChatInput.addEventListener('keydown', e => { if (e.key === 'Enter') createPrivateRoom(); });
+btnConfirm.addEventListener('click', createPrivateRoom);
+
+function createPrivateRoom() {
+  const target = newChatInput.value.trim();
+  if (!target) return;
+
+  const roomId = [currentUser, target].sort().join('__'); // room única por par
+  addPrivateTab(target, roomId);
+  switchRoom(roomId, `@ ${target}`);
+
+  newChatInput.value = '';
+  newChatForm.hidden = true;
+}
+
+function addPrivateTab(label, roomId) {
+  // Evitar duplicados
+  if (document.querySelector(`[data-room="${roomId}"]`)) return;
+
+  const li = document.createElement('li');
+  li.className = 'chatSidebar__item';
+  li.dataset.room = roomId;
+  li.innerHTML = `<span class="chatSidebar__hash">@</span><span>${label}</span>`;
+  li.addEventListener('click', () => switchRoom(roomId, `@ ${label}`));
+  privateRoomsList.appendChild(li);
+}
+
+function switchRoom(roomId, title) {
+  // Desactivar item anterior
+  document.querySelectorAll('.chatSidebar__item').forEach(el => {
+    el.classList.toggle('chatSidebar__item--active', el.dataset.room === roomId);
+  });
+
+  chatTitle.textContent = title.replace(/^@ /, '') ;
+  currentRoom = roomId;
+
+  // Emitir al servidor el cambio de sala
+  socket.emit('joinRoom', roomId);
+
+  // Limpiar mensajes al cambiar de sala
+  document.getElementById('contChats').innerHTML = '<span id="viewLastMsg"></span>';
+}
+
+// Click en "general"
+document.getElementById('sidebar-global').addEventListener('click', () => {
+  switchRoom('global', 'general');
+});
 
 
 

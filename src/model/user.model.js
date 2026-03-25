@@ -24,6 +24,19 @@ const userSchema = new mongose.Schema({
     required: true, 
     unique: true 
   },
+  status: {
+    type: String,
+    enum: ["active", "blocked"]
+  },
+  haveChangePassword: {
+    type: Boolean,
+    default: true
+  },
+  historyPassword:{
+    type: Array,
+    default: []
+  }
+  ,
 }, { timestamps: true });
 
 module.exports = mongose.model('User', userSchema);

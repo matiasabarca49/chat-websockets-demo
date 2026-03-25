@@ -9,9 +9,14 @@ const messageService = new MessageService(messageRepo, conversationRepo);
 
 // controllers/message.controller.js
 const getGlobalChatHistory = async (req, res) => {
-    // Llama al servicio
-    const history = await messageService.getGlobalHistory();
-    res.json(history); 
+    try{
+        // Llama al servicio
+        const history = await messageService.getGlobalHistory();
+        res.json(history); 
+    }catch(error){
+        console.log(error);
+        res.json({success: false, message: "Error en el Servidor"})
+    }
 };
 
 const getChatHistory = async (req, res) => {
