@@ -3,9 +3,7 @@ const mongoose = require('mongoose');
 // models/Message.js
 const messageSchema = new mongoose.Schema({
   conversationId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Conversation', 
-    index: true 
+    type: String
 },
   senderId: { 
     type: mongoose.Schema.Types.ObjectId, 

@@ -2,6 +2,10 @@ const User = require('../model/user.model.js');
 
 class UserRepository {
 
+    async getAll(){
+        return await User.find().lean();
+    }
+
     async create(userData) {
         return await User.create(userData);
     }

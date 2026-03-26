@@ -2,6 +2,7 @@ const renderUserConnected = (arrayFromConnected) => {
   const contConnected = document.getElementById('connectedID');
   contConnected.innerHTML = '';
   arrayFromConnected.forEach(user => {
+    if (document.getElementById(`user-${user._id}`)|| user._id === autorCurrent.id) return;
     if (user.name !== autorCurrent.name) {
       const div = document.createElement('div');
       div.innerHTML = `<div class="connectedBar__item" id="user-${user._id}">${user.name} ${user.lastName}</div>`;
@@ -12,10 +13,10 @@ const renderUserConnected = (arrayFromConnected) => {
 
 const renderNewUserConnected = (user) => {
   const contConnected = document.getElementById('connectedID');
-  if (document.getElementById(`user-${user._id}`)) return;
+  if (document.getElementById(`user-${user._id}`) || user._id === autorCurrent.id) return;
   if (user.name !== autorCurrent) {
     const div = document.createElement('div');
-    div.innerHTML = `<p id="user-${user._id}"><span>${user.name} ${user.lastName}</span></p>`;
+    div.innerHTML = `<div class="connectedBar__item" id="user-${user._id}">${user.name} ${user.lastName}</div>`;
     contConnected.appendChild(div);
   }
 };
@@ -52,29 +53,101 @@ const renderChats = (chats) => {
 };
 
 const renderNewChat = (chat) => {
-  if (document.getElementById(`chatGlobal-${chat._id}`)) return;
+  if (document.getElementById(`chatGlobal-${chat._id}`) || chat.conversationId !== room) return;
   const contChats = document.getElementById('contChats');
   contChats.appendChild(buildMessage(chat));
   const span = document.getElementById('viewLastMsg');
   if (span) span.remove();
   contChats.appendChild(Object.assign(document.createElement('span'), { id: 'viewLastMsg' }));
   scrollToBottom();
+  const badge = document.getElementById(`conversation-${chat.conversationId}`);
 };
 
+const renderConversations = (conversations) =>{
+  const privateRoomsList = document.getElementById('privateRoomsList');
+  conversations.forEach( conversation =>{
+    
+    // Evitar duplicados en la lista
+    if (!document.querySelector(`[data-room="${conversation.conversationId}"]`)) {
+  const li = document.createElement('li');
+  li.className = 'chatSidebar__item';
+  li.dataset.room = conversation.conversationId;
+
+  const label = conversation.isGroup
+    ? conversation.name
+    : `${conversation.participants[0].name} ${conversation.participants[0].lastName}`;
+
+  li.innerHTML = `
+    <span class="chatSidebar__hash">@</span>
+    <span class="chatSidebar__itemName">${label}</span>
+    <span class="badge" style="display:none;" id="conversation-${conversation.conversationId}"></span>
+    <button class="chatSidebar__deleteBtn" title="Eliminar chat">×</button>
+  `;
+
+  li.addEventListener('click', () =>
+    switchRoom(conversation.conversationId, conversation?.name || label)
+  );
+
+  // El botón elimina sin propagar el click al li
+  li.querySelector('.chatSidebar__deleteBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    li.remove();
+
+    fetch(`http://localhost:8080/api/v1/conversations/${conversation.conversationId}`,
+      {
+        method: "DELETE"
+      }
+    )
+
+    // Si era el room activo, volvé al global
+    if (room === conversation.conversationId) {
+      switchRoom("CHAT_GLOBAL_ID", "Chat Global");
+    }
+  });
+
+  privateRoomsList.appendChild(li);
+}
+  })
+}
+
+const renderNewConversation = (conversation)=>{
+  const privateRoomsList = document.getElementById('privateRoomsList');
+    // Evitar duplicados en la lista
+  if (!document.querySelector(`[data-room="${conversation.conversationId}"]`)) {
+    const li = document.createElement('li');
+    li.className = 'chatSidebar__item';
+    li.dataset.room = conversation.conversationId;
+
+    const label = conversation.isGroup
+      ? conversation.name
+      : `${conversation.participants[0].name} ${conversation.participants[0].lastName}`;
+
+    li.innerHTML = `
+      <span class="chatSidebar__hash">1</span>
+      <span class="chatSidebar__itemName">${label}</span>
+      <span class="badge">Nuevo</span>
+    `;
+
+    li.addEventListener('click', () =>
+      switchRoom(conversation.conversationId, conversation?.name || label)
+    );
+
+
+    privateRoomsList.appendChild(li);
+  }
+}
+
 //Funcion que genera un nuevo mensaje y se lo envia al servidor
-const newGlobalMessage = () =>{
+const newMessage = () =>{
     //Creamos el mensaje nuevo
     const message = {
+        conversationId: room,
         senderId: autorCurrent.id,
         content: document.getElementById("text").value,
     }
     document.getElementById("text").value = ""
     //emite el mensaje nuevo creado al servidor
-    socket.emit('send_global_message', message)
-    socket.on("new_global_message", (data) => {
-        console.log("Nuevo Mensaje: ", data);
-        renderNewChat(data)
-    })
+    socket.emit('send_message', message)
 }
 
 /**
@@ -86,6 +159,7 @@ let socket = io()
 //Variables que nos permite difenciar el chat propio de los demas clientes
 let idChat;
 let autorCurrent;
+let room;
 
 //Si el usuario está guardado en el localStorage se asigna a la variable autorCurrent
 if(localStorage.getItem("autor")){
@@ -93,10 +167,6 @@ if(localStorage.getItem("autor")){
     autorCurrent = JSON.parse(localStorage.getItem("autor"));
     //Se emite  al servidor ese usuario almacenado en el localstorage
     socket.emit('connect_to_global', autorCurrent)
-    socket.on('new_connected_global', (data) => {
-        console.log(data);
-        renderNewUserConnected(data.data);
-    })
     //El id chat que se usa para identificar los chats del autor actual se obtiene del localstorage
     idChat =  localStorage.getItem("idChat") 
     const currentUser = document.getElementById("currentUser")
@@ -111,21 +181,46 @@ if(localStorage.getItem("autor")){
 socket.on('cnted', (data) =>{
     console.log("Usuarios conectados: ", data)
     renderUserConnected(data)
-})   
+})  
 
+socket.on('new_connected_global', (data) => {
+  console.log(data);
+  renderNewUserConnected(data.data);
+})
 
-//recibe los chats desde el servidor
-fetch("http://localhost:8080/api/v1/messages/global")
-    .then( res => res.json())
-    .then( data => {
-        renderChats(data);
-    } )
+//Escucha nuevos mensajes
+socket.on("new_message", (data) => {
+    console.log("Nuevo Mensaje: ", data);
+    renderNewChat(data)
+})
+
+//Escuchar nuevas conversaciones
+socket.on("available_conversation", (data) =>{
+  console.log("Nueva Conversacion: ", data);
+  renderNewConversation(data);
+})
+
+//Por defecto poner el chat global
+switchRoom("CHAT_GLOBAL_ID", "Chat Global");
+
+//Obtener Conversaciones del Usuarios
+fetch("http://localhost:8080/api/v1/conversations")
+  .then( res => res.json() )
+  .then( data => {
+      renderConversations(data.data)
+  })
+
+//Evento para cambiar de otros chats al Global
+const global = document.getElementById("sidebar-global");
+global.addEventListener("click", ()=>{
+  switchRoom("CHAT_GLOBAL_ID", "Chat Global");
+})
 
 //Evento que se ejecuta al escribir en el chat
 const form = document.getElementById("form")
 form.onsubmit = (e) =>{
     e.preventDefault()
-    newGlobalMessage()
+    newMessage()
 } 
 
 //Evento para desconectar el usuario
@@ -137,69 +232,109 @@ disconect.addEventListener("click", () =>{
     window.location.href = "/login"
 })
 
-// ── Sidebar: toggle nuevo chat privado ──────────────────────────────
-const btnNewPrivate   = document.getElementById('btn-new-private');
-const newChatForm     = document.getElementById('newChatForm');
-const newChatInput    = document.getElementById('newChatInput');
-const btnConfirm      = document.getElementById('btn-confirm-private');
+const btnNewPrivate    = document.getElementById('btn-new-private');
+const modalOverlay     = document.getElementById('modalOverlay');
+const modalBody        = document.getElementById('modal__body');
+const modalClose       = document.getElementById('modal__close');
 const privateRoomsList = document.getElementById('privateRoomsList');
-const chatTitle       = document.getElementById('chatTitle');
 
-let currentRoom = 'global';
-
+// Abrir modal
 btnNewPrivate.addEventListener('click', () => {
-  newChatForm.hidden = !newChatForm.hidden;
-  if (!newChatForm.hidden) newChatInput.focus();
+  populateModal();
+  modalOverlay.classList.remove('hidden');
 });
 
-// Confirmar nuevo chat privado con Enter o botón
-newChatInput.addEventListener('keydown', e => { if (e.key === 'Enter') createPrivateRoom(); });
-btnConfirm.addEventListener('click', createPrivateRoom);
+// Cerrar modal
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => {
+  if (e.target === modalOverlay) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
 
-function createPrivateRoom() {
-  const target = newChatInput.value.trim();
-  if (!target) return;
-
-  const roomId = [currentUser, target].sort().join('__'); // room única por par
-  addPrivateTab(target, roomId);
-  switchRoom(roomId, `@ ${target}`);
-
-  newChatInput.value = '';
-  newChatForm.hidden = true;
+function closeModal() {
+  modalOverlay.classList.add('hidden');
 }
 
-function addPrivateTab(label, roomId) {
-  // Evitar duplicados
-  if (document.querySelector(`[data-room="${roomId}"]`)) return;
+async function populateModal() {
 
-  const li = document.createElement('li');
-  li.className = 'chatSidebar__item';
-  li.dataset.room = roomId;
-  li.innerHTML = `<span class="chatSidebar__hash">@</span><span>${label}</span>`;
-  li.addEventListener('click', () => switchRoom(roomId, `@ ${label}`));
-  privateRoomsList.appendChild(li);
+  //Obtener los usuarios
+  const res = await fetch("http://localhost:8080/api/v1/users");
+  const data = await res.json();
+  const users = data.data;
+  
+  modalBody.innerHTML = '';
+
+  if (!users.length) {
+    modalBody.innerHTML = '<p class="modal__empty">No hay usuarios conectados.</p>';
+    return;
+  }
+
+  users.forEach(user => {
+    const item = document.createElement('div');
+    item.className = 'modal__userItem';
+    item.innerHTML = `
+      <span class="modal__userDot"></span>
+      <span class="modal__userName">${user.name} ${user.lastName}</span>
+      <span class="modal__userArrow">→</span>
+    `;
+    item.addEventListener('click', () => {
+      startPrivateChat(user);
+      closeModal();
+    });
+    modalBody.appendChild(item);
+  });
 }
 
-function switchRoom(roomId, title) {
-  // Desactivar item anterior
+function startPrivateChat(targetUser) {
+  const roomId = [autorCurrent.id, targetUser._id].sort().join('-');
+
+  socket.emit("connect_to_private", targetUser);
+
+  // Evitar duplicados en la lista
+  if (!document.querySelector(`[data-room="${roomId}"]`)) {
+    const li = document.createElement('li');
+    li.className = 'chatSidebar__item';
+    li.dataset.room = roomId;
+    li.innerHTML = `<span class="chatSidebar__hash">@</span><span>${targetUser.name} ${targetUser.lastName}</span>`;
+    li.addEventListener('click', () => switchRoom(roomId, `${targetUser.name} ${targetUser.lastName}`));
+    privateRoomsList.appendChild(li);
+  }
+
+  switchRoom(roomId, `${targetUser.name} ${targetUser.lastName}`);
+}
+
+async function switchRoom(roomId, title) {
   document.querySelectorAll('.chatSidebar__item').forEach(el => {
     el.classList.toggle('chatSidebar__item--active', el.dataset.room === roomId);
   });
 
-  chatTitle.textContent = title.replace(/^@ /, '') ;
-  currentRoom = roomId;
+  if(roomId !== "CHAT_GLOBAL_ID"){
+    document.getElementById('connectedID').style.display = 'none';
+  }else{
+    document.getElementById('connectedID').style.display = 'block';
+  }
 
-  // Emitir al servidor el cambio de sala
-  socket.emit('joinRoom', roomId);
+  document.getElementById("titleId").innerText = title;
 
-  // Limpiar mensajes al cambiar de sala
+  
+  room = roomId;
+
+  console.log("room actual: ", room);
+
+  // Emitir al servidor
+  socket.emit('join_to_conversation', roomId);
+
+  // Limpiar mensajes
   document.getElementById('contChats').innerHTML = '<span id="viewLastMsg"></span>';
-}
 
-// Click en "general"
-document.getElementById('sidebar-global').addEventListener('click', () => {
-  switchRoom('global', 'general');
-});
+  const res = await fetch(`http://localhost:8080/api/v1/messages/conversation/${roomId}`);
+
+  const data = await res.json();
+
+  renderChats(data);
+}
 
 
 

@@ -94,7 +94,6 @@ body::after {
 }
 
 .connectedStyle {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -114,19 +113,10 @@ body::after {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
+  margin: 0.2rem;
 }
 
-.connectedStyle span::before,
-.connectedStyle div::before,
-.connectedStyle p::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--success);
-  flex-shrink: 0;
-  animation: pulse 2s ease-in-out infinite;
-}
+
 
 /* ── Área del chat ─────────────────────────────────────────────────── */
 .containerPageChat {
@@ -540,6 +530,54 @@ body::after {
   text-overflow: ellipsis;
 }
 
+.chatSidebar__itemName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatSidebar__deleteBtn {
+  background: transparent;
+  border: none;
+  color: transparent;           /* oculto por defecto */
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+/* Aparece al hacer hover en el item */
+.chatSidebar__item:hover .chatSidebar__deleteBtn {
+  color: var(--muted);
+}
+
+.chatSidebar__deleteBtn:hover {
+  color: var(--error) !important;
+  background: rgba(255, 77, 77, 0.1);
+}
+
+/* ── Badge de notificaciones ───────────────────────────────────────── */
+.badge {
+  background: var(--error);
+  color: #fff;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
 /* Animación pulse (si no la tenés ya) */
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -548,5 +586,135 @@ body::after {
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Modal nuevo chat privado ──────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease both;
+}
+
+.modalOverlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 320px;
+  overflow: hidden;
+  animation: slideUp 0.2s ease both;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.modal__close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.modal__close:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+
+.modal__body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.modal__empty {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.modal__userItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.modal__userItem:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+
+.modal__userDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.modal__userName {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  flex: 1;
+}
+
+.modal__userArrow {
+  font-size: 12px;
+  color: var(--muted);
+  transition: color 0.15s, transform 0.15s;
+}
+
+.modal__userItem:hover .modal__userArrow {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }

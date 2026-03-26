@@ -1,4 +1,4 @@
-const globalChat = process.env.GLOBAL_CHAT_ID || "69bae27ba1177b5541b2bdcf";
+const globalChat = process.env.GLOBAL_CHAT_ID || "GLOBAL_CHAT_ID";
 
 
 const registerUserHandlers = async (io, socket, userService) => {

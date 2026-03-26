@@ -4,6 +4,8 @@ const ConversationRepository = require('../repositories/conversation.repository'
 const messageRepo = new MessageRepository();
 const conversationRepo = new ConversationRepository();
 
+const globalChat = process.env.GLOBAL_CHAT_ID || "GLOBAL_CHAT_ID"
+
 
 const messageService = new MessageService(messageRepo, conversationRepo);
 
@@ -11,7 +13,7 @@ const messageService = new MessageService(messageRepo, conversationRepo);
 const getGlobalChatHistory = async (req, res) => {
     try{
         // Llama al servicio
-        const history = await messageService.getGlobalHistory();
+        const history = await messageService.getHistory(globalChat);
         res.json(history); 
     }catch(error){
         console.log(error);
@@ -20,10 +22,15 @@ const getGlobalChatHistory = async (req, res) => {
 };
 
 const getChatHistory = async (req, res) => {
-    const { chatId } = req.params;
-    // Llama al servicio
-    const history = await messageService.getHistory(chatId);
-    res.json(history); 
+    try{
+        const { chatId } = req.params;
+        // Llama al servicio
+        const history = await messageService.getHistory(chatId);
+        res.json(history); 
+    }catch(error){
+        console.log(error);
+        res.json({success: false, message: "Error en el Servidor"})
+    }
 };
 
 module.exports = {

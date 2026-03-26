@@ -44,10 +44,10 @@
     </div>
   </aside>
 
-  <!-- ── Área principal — IDÉNTICA al original ── -->
+  <!-- ── Área principal  ── -->
   <div class="containerPageChat">
     <div class="welcome">
-      <h1>Bienvenido al chat</h1>
+      <h1 id="titleId">Bienvenido al chat</h1>
       <div class="welcome__user">
         <button class="btn-disconnect" id="btn-disconnect">Desconectarse →</button>
       </div>
@@ -70,6 +70,19 @@
       </div>
     </form>
   </div>
+
+  <!-- Modal selección de usuario privado -->
+    <div class="modalOverlay hidden" id="modalOverlay">
+        <div class="modal">
+            <div class="modal__header">
+            <span class="modal__title">Nuevo chat privado</span>
+            <button class="modal__close" id="modal__close">✕</button>
+            </div>
+            <div class="modal__body" id="modal__body">
+            <!-- Se puebla dinámicamente -->
+            </div>
+        </div>
+    </div>
 
 </div>
 

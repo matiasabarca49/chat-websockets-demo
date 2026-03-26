@@ -11,10 +11,14 @@ class MessageRepository {
   }
 
   async findByConversation(conversationId, limit = 50) {
-    return await Message.find({ conversationId })
+    return await Message.find({ conversationId: conversationId })
       .sort({ timestamp: -1 })
       .limit(limit)
       .populate('senderId', 'username');
+  }
+
+  async deleteAllMessage(conversationId){
+    return await Message.deleteMany({conversationId});
   }
 }
 

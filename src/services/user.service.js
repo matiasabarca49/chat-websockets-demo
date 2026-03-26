@@ -23,6 +23,10 @@ class UserService {
         return allUser;
     } 
 
+    getSocketByUser(userId){
+        return this.connectedUsers.get(userId);
+    }
+
     getUserIdBySocketId(socketIdUser){
         console.log(socketIdUser);
         for( let [userId, socketId] of this.connectedUsers.entries()){
@@ -39,6 +43,12 @@ class UserService {
     disconnectUser(userId) {
         console.log(`Usuario ${userId} desconectado`);
         this.connectedUsers.delete(userId);
+    }
+
+    async getAll(user){
+        const users = await this.repository.getAll();
+        const usersFiltered = users.filter( userDB => userDB._id.toString() !== user.id);
+        return usersFiltered;
     }
 
     async create(user){

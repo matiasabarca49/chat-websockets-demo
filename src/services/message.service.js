@@ -7,7 +7,7 @@ class MessageService {
 
   async sendMessage(senderId, conversationId, content) {
     //Validar que la conversación existe y el usuario es parte de ella
-    const conversation = await this.conversationRepo.findById(conversationId);
+    const conversation = await this.conversationRepo.findByConversationId(conversationId);
     /* console.log("Conversation ID: ", conversation); */
     if (!conversation) throw new Error("Conversación no encontrada");
     
@@ -25,9 +25,12 @@ class MessageService {
     return message;
   }
 
-  async getGlobalHistory(){
-      return this.messageRepo.findByConversation( process.env.GLOBAL_CHAT_ID || "69bae27ba1177b5541b2bdcf");
-      
+  async getHistory(chatId){
+      return await this.messageRepo.findByConversation(chatId);
+  }
+
+  async deleteAllMessage(conversationId){
+    return this.messageRepo.deleteAllMessage(converstationId);
   }
 
 

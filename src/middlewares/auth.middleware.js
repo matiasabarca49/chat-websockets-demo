@@ -20,7 +20,10 @@ const authUser = (req,res,next) =>{
         };
         next();
     });
+}
 
+const authAllRoutes = (req,res,next) =>{
+    
 }
 
 module.exports = {

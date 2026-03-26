@@ -27,7 +27,7 @@ const { registerConversationHandlers } = require('../handlers/conversion.handler
 //Instanciamos el servicio para poder usarlo en los handlers de sockets
 const messageService = new MessageService(messageRepo, conversationRepo);
 const userService = new UserService(userRepository);
-const conversationService = new ConversationService(ConversationRepository);
+const conversationService = new ConversationService(conversationRepo, userService, messageRepo);
 
 const setupSocket = (server) => {
 

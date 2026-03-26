@@ -23,11 +23,13 @@ app.set("view engine", "handlebars")
 const homeRouter = require("./routes/chat.router.js")
 const messageRouter = require("./routes/message.router.js")
 const userRouter = require("./routes/user.router.js")
+const conversationRouter = require("./routes/conversation.router.js")
 const authRouter = require("./routes/auth.router.js")
 
 app.use("/", homeRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/conversations", conversationRouter);
 app.use("/api/v1/auth", authRouter);
 
 
