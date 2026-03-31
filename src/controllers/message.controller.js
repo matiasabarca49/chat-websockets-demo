@@ -24,8 +24,9 @@ const getGlobalChatHistory = async (req, res) => {
 const getChatHistory = async (req, res) => {
     try{
         const { chatId } = req.params;
+        const {lastId } = req.query
         // Llama al servicio
-        const history = await messageService.getHistory(chatId);
+        const history = await messageService.getHistory(chatId, lastId);
         res.json(history); 
     }catch(error){
         console.log(error);

@@ -25,8 +25,8 @@ class MessageService {
     return message;
   }
 
-  async getHistory(chatId){
-      return await this.messageRepo.findByConversation(chatId);
+  async getHistory(chatId, lastId){
+      return await this.messageRepo.findByConversation(chatId, lastId);
   }
 
   async deleteAllMessage(conversationId){

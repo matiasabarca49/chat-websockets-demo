@@ -10,9 +10,10 @@
     <div class="chatSidebar__section">
       <span class="chatSidebar__label">Canales</span>
       <ul class="chatSidebar__list">
-        <li class="chatSidebar__item chatSidebar__item--active" data-room="global" id="sidebar-global">
+        <li class="chatSidebar__item chatSidebar__item--active" data-room="CHAT_GLOBAL_ID" id="sidebar-global">
           <span class="chatSidebar__hash">#</span>
-          <span>general</span>
+          <span>Global</span>
+          <span class="badge" id="conversation-CHAT_GLOBAL_ID" style="display: none;"></span>
         </li>
       </ul>
     </div>
@@ -59,7 +60,13 @@
     </div>
 
     <div id="contChats" class="contChatsStyle">
+      <div id="chatSpinner" class="spinner-wrapper" style="display: none;">
+        <div class="loader"></div>
+        <span>Cargando mensajes anteriores...</span>
+      </div>
+
       {{!-- Acá van los mensajes --}}
+      
       <span id="viewLastMsg"></span>
     </div>
 
