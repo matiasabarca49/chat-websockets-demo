@@ -1,3 +1,4 @@
+const { DuplicateEntryException } = require('../exceptions/exceptions.js');
 const User = require('../model/user.model.js');
 
 class UserRepository {
@@ -7,7 +8,16 @@ class UserRepository {
     }
 
     async create(userData) {
-        return await User.create(userData);
+        return await User.create(userData)
+            .catch(err => {
+                if(err.code === 11000){
+                    const field = `${Object.keys(err.keyValue)[0]}`;
+                    const value = err.keyValue[field];
+                    throw new DuplicateEntryException("Users", field, value);
+                }else {
+                    throw err;
+                }
+            });
     }
 
     async findByUsername(username) {

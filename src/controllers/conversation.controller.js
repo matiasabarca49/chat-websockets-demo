@@ -9,24 +9,22 @@ const messageRepository = new MessageRepository();
 const userService = new UserService(userRepository);
 const conversationService = new ConversationService(conversationRepo, userService, messageRepository);
 
-const getAllConversation = async (req, res) =>{
+const getAllConversation = async (req, res, next) =>{
     try{
         const conversations = await conversationService.getConversationByUser(req.user);
         return res.status(200).json({success: true, data: conversations});
     }catch(error){
-        console.error(error);
-        return res.status(200).json({success: false, message: "Error interno del servidor"});
+        next(error);
     }
 }
 
-const deleteConversation = async (req, res) =>{
+const deleteConversation = async (req, res, next) =>{
     try{
         const {conversationId} = req.params
         await conversationService.deleteConversation(conversationId);
         return res.status(200).json({success: true});
     }catch(error){
-        console.error(error);
-        return res.status(200).json({success: false, message: "Error interno del servidor"});
+        next(error);
     }
 }
 

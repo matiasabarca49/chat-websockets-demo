@@ -18,14 +18,29 @@ const authUser = (req,res,next) =>{
             email: credentials.email,
             username: credentials.username
         };
-        next();
+        return next();
     });
 }
 
-const authAllRoutes = (req,res,next) =>{
-    
+//Evitar que usuarios autenticados accedan a rutas de login o registro
+const checkAuth = (req,res,next) =>{
+
+    const token = req.cookies.token;
+
+    if(!token){
+        return next();
+    }
+
+    jwt.verify(token, secretKey, async (error, credentials) => {
+        if (error) {
+            return next();
+        }
+       
+        return res.redirect("/");
+    });
 }
 
 module.exports = {
-    authUser
+    authUser,
+    checkAuth
 }

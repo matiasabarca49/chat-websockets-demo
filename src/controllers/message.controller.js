@@ -10,27 +10,25 @@ const globalChat = process.env.GLOBAL_CHAT_ID || "GLOBAL_CHAT_ID"
 const messageService = new MessageService(messageRepo, conversationRepo);
 
 // controllers/message.controller.js
-const getGlobalChatHistory = async (req, res) => {
+const getGlobalChatHistory = async (req, res, next) => {
     try{
         // Llama al servicio
         const history = await messageService.getHistory(globalChat);
         res.json(history); 
     }catch(error){
-        console.log(error);
-        res.json({success: false, message: "Error en el Servidor"})
+        next(error);
     }
 };
 
-const getChatHistory = async (req, res) => {
+const getChatHistory = async (req, res, next) => {
     try{
-        const { chatId } = req.params;
+        const { conversationId } = req.params;
         const {lastId } = req.query
         // Llama al servicio
-        const history = await messageService.getHistory(chatId, lastId);
+        const history = await messageService.getHistory(conversationId, lastId);
         res.json(history); 
     }catch(error){
-        console.log(error);
-        res.json({success: false, message: "Error en el Servidor"})
+        next(error);
     }
 };
 

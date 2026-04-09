@@ -1,3 +1,7 @@
+const { NotFoundException, NotForbidden } = require("../exceptions/exceptions.js");
+
+const chatGlobal = process.env.GLOBAL_CHAT_ID || "GLOBAL_CHAT_ID";
+
 // services/MessageService.js
 class MessageService {
   constructor(messageRepo, conversationRepo) {
@@ -8,12 +12,15 @@ class MessageService {
   async sendMessage(senderId, conversationId, content) {
     //Validar que la conversación existe y el usuario es parte de ella
     const conversation = await this.conversationRepo.findByConversationId(conversationId);
-    /* console.log("Conversation ID: ", conversation); */
-    if (!conversation) throw new Error("Conversación no encontrada");
     
-    /* const isParticipant = conversation.participants.includes(senderId);
-    if (!isParticipant) throw new Error("No tienes permiso en este chat");
- */
+    if (!conversation) throw new NotFoundException("Conversacion", "id", conversationId);
+    
+    if(conversationId !== chatGlobal) {
+      
+      const isParticipant = conversation.participants.some(participant => participant._id.toString() === senderId);
+  
+      if (!isParticipant) throw new NotForbidden("No puedes enviar mensajes a una conversación de la que no eres parte");
+    }
   
     //Persistir
     const message = await this.messageRepo.create({
@@ -25,12 +32,16 @@ class MessageService {
     return message;
   }
 
-  async getHistory(chatId, lastId){
-      return await this.messageRepo.findByConversation(chatId, lastId);
+  async getHistory(conversationId, lastId){
+      const conversation = await this.conversationRepo.existsByConversationId(conversationId);
+      if (!conversation) throw new NotFoundException("Conversacion", "id", conversationId);
+      return await this.messageRepo.findByConversation(conversationId, lastId);
   }
 
   async deleteAllMessage(conversationId){
-    return this.messageRepo.deleteAllMessage(converstationId);
+    const conversation = await this.conversationRepo.existsByConversationId(conversationId);
+    if (!conversation) throw new NotFoundException("Conversacion", "id", conversationId);
+    return this.messageRepo.deleteAllMessage(conversationId);
   }
 
 

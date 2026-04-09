@@ -19,7 +19,7 @@ const registerUserHandlers = async (io, socket, userService) => {
 
     // ESCUCHADOR DE DESCONEXIÓN
     socket.on("disconnect", async (reason) => {
-        console.log(`Usuario ${socket.id} se fue. Motivo: ${reason}`);
+        /* console.log(`Usuario ${socket.id} se fue. Motivo: ${reason}`); */
 
         const userId = userService.getUserIdBySocketId(socket.id);
 

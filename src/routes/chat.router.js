@@ -1,5 +1,5 @@
 const express = require('express')
-const { authUser } = require('../middlewares/auth.middleware.js')
+const { authUser, checkAuth } = require('../middlewares/auth.middleware.js')
 
 const { Router } = express
 
@@ -9,11 +9,11 @@ router.get("/", authUser, (req,res) => {
     res.render("chat", {})
 })
 
-router.get("/login", (req,res) =>{
+router.get("/login", checkAuth, (req,res) =>{
     res.render("login", {});
 })
 
-router.get("/register", (req,res) =>{
+router.get("/register", checkAuth, (req,res) =>{
     res.render("register", {});
 })
 

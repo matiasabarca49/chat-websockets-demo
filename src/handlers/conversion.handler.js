@@ -4,7 +4,7 @@ const globalChat = process.env.GLOBAL_CHAT_ID || "GLOBAL_CHAT_ID"
 const registerConversationHandlers = (io, socket, conversationService) => {
   
     socket.join(globalChat);
-    console.log(`Socket ${socket.id} se unió al chat global: ${globalChat}`);
+    /* console.log(`Socket ${socket.id} se unió al chat global: ${globalChat}`); */
 
     socket.on("connect_to_private", async (data) =>{
         //1 - Obtener usuario actual con su socket
@@ -19,19 +19,20 @@ const registerConversationHandlers = (io, socket, conversationService) => {
         socket.join(conversation.conversationId);
 
         //Ingresar el usuario destinatario en la conversacion
+        //Verificar que el destinatario este conectado para obtener su socket y agregarlo a la conversacion
         const recipientSocket = io.sockets.sockets.get(socketRecipient);
         if (recipientSocket) {
             recipientSocket.join(conversation.conversationId);
         }
 
-        //Emitir al emisor la conversacion creada
+        //Emitir al destinatario la conversacion creada
         socket.to(socketRecipient).emit("available_conversation", conversation)
 
         
     })
 
     socket.on("join_to_conversation", (data) =>{
-        console.log("Room: ", data)
+        /* console.log("Room: ", data) */
         socket.join(data);
     })
 

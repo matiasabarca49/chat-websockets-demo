@@ -1,5 +1,7 @@
 const { RegisterUserDTO, UserMapper } = require("../dto/auth.dto");
-const { generateToken } = require("../utils/auth.utils");
+const { CredentialsException } = require("../exceptions/exceptions.js");
+const { generateToken } = require("../utils/auth.helper.js");
+const { hashPassword, verifyPassword } = require("../utils/hashs.helper.js");
 
 class AuthService {
     constructor(userRepository){
@@ -7,32 +9,39 @@ class AuthService {
     }
 
     async registerUser (user){
-        const historyPassword = [];
-        user.status = "active";
-        user.haveChangePassword = true;
-        historyPassword.push(user.password);
-        user.historyPassword = historyPassword;
-        const userDTO = new RegisterUserDTO(user);
-        return UserMapper.toResponse(await this.repository.create(userDTO));
+            const historyPassword = [];
+            user.status = "active";
+            //Tratamiento de Password
+            const password = await hashPassword(user.password);
+            user.password = password;
+            user.haveChangePassword = true;
+            historyPassword.push(password);
+            user.historyPassword = historyPassword;
+            //Creamos el usuario
+            const userDTO = new RegisterUserDTO(user);
+            return UserMapper.toResponse(await this.repository.create(userDTO));
     }
 
     async loginUser(credentials){
-        const user = await this.repository.findByEmail(credentials.email);
-        if(!user){
-            throw new Error("Usuario no encontrado");
-        }
-
-        if(user.password !== credentials.password){
-            throw new Error("Credenciales incorrectas");
-        }
-
-        const token = generateToken(user);
-        
-        const userMapper = UserMapper.toResponse(user);
-        
-        userMapper.token = token;
-                
-        return userMapper;
+            const user = await this.repository.findByEmail(credentials.email);
+           
+            if(!user){
+                throw new CredentialsException("Credenciales incorrectas");
+            }
+    
+            const isMatch = await verifyPassword(user.password, credentials.password);
+    
+            if(!isMatch){
+                throw new CredentialsException("Credenciales incorrectas");
+            }
+    
+            const token = generateToken(user);
+            
+            const userMapper = UserMapper.toResponse(user);
+            
+            userMapper.token = token;
+                    
+            return userMapper;
     }
 
 

@@ -4,19 +4,18 @@ const AuthService = require('../services/auth.service.js');
 const userRepository = new UserRepository();
 const authService = new AuthService(userRepository);
 
-const registerUser = async (req, res)=>{
+const registerUser = async (req, res, next)=>{
     try{
         const userRequest = new RegisteredRequestDTO(req.body);
         const registeredUser = await authService.registerUser(userRequest);
 
         return res.status(200).json({success: true, data: registeredUser});
     }catch(error){
-        console.error(error)
-        return res.status(200).json({success: false, message: "Error en el Servidor"});
+        next(error);
     }
 }
 
-const loginUser = async (req, res)=>{
+const loginUser = async (req, res, next)=>{
     try{
         const crendentials = new LoginRequestDTO(req.body);
         const user = await authService.loginUser(crendentials);
@@ -30,8 +29,7 @@ const loginUser = async (req, res)=>{
         return res.status(200).json({success: true, data:  user})
     }
     catch(error){
-        console.log(error);
-        return res.status(500).json({success: false, message: "Error en el servidor"})
+        next(error);
     }
 }
 
